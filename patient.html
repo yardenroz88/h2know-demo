@@ -509,23 +509,22 @@
 <audio id="alertAudio" src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg" loop></audio>
 
 <script>
- // --- FIREBASE CONFIGURATION (UPDATED WITH YOUR REAL KEYS) ---
+ // --- FIREBASE CONFIGURATION ---
     const firebaseConfig = {
         apiKey: "AIzaSyC9RUl-cTtvWGfOd43Yn7NYDLMq1cYCvXE",
         authDomain: "h2know-demo.firebaseapp.com",
-        databaseURL: "https://h2know-demo-default-rtdb.firebaseio.com", // נבנה אוטומטית לפי ה-Project ID שלך
+        databaseURL: "https://h2know-demo-default-rtdb.firebaseio.com",
         projectId: "h2know-demo",
         storageBucket: "h2know-demo.appspot.com",
         messagingSenderId: "91107611504",
         appId: "1:91107611504:web:3b4071b088f18db19cb5b5"
     };
 
+    // אתחול פיירבייס - פעם אחת בלבד!
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-
+    // הגדרת משתני האפליקציה (לוודא שאין פה שוב הגדרה של database!)
     let currentPatientId = "";
     let isPatchConnected = true;
     let updateInterval = null;
