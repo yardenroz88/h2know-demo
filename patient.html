@@ -15,7 +15,7 @@
             --text-dark: #2c2525;
             --text-muted: #7a7070;
             --success-color: #2e7d32;
-            --warning-color: #f57c00; /* צבע כתום מודרני למצבי ביניים */
+            --warning-color: #f57c00; 
             --danger-color: #a62626; 
             --card-shadow: 0 4px 20px rgba(107, 29, 29, 0.03);
         }
@@ -30,15 +30,9 @@
             margin: 0;
             padding: 24px 16px;
             background-color: var(--bg-banana);
-            transition: background-color 0.4s ease, color 0.4s ease;
             color: var(--text-dark);
             display: flex;
             justify-content: center;
-        }
-
-        body.alert-active {
-            background-color: var(--burgundy);
-            color: #ffffff;
         }
 
         .container {
@@ -59,10 +53,6 @@
             letter-spacing: -0.5px;
         }
 
-        body.alert-active h1 {
-            color: var(--bg-banana);
-        }
-
         .status-area {
             display: flex;
             flex-direction: column;
@@ -80,7 +70,6 @@
 
         .status-connected { background-color: rgba(46, 125, 50, 0.08); color: var(--success-color); }
         .status-disconnected { background-color: rgba(0, 0, 0, 0.05); color: var(--text-muted); }
-        body.alert-active .status-connected { background-color: rgba(255,255,255,0.15); color: #ffffff; }
 
         .status-subtext {
             font-size: 0.75rem;
@@ -88,21 +77,13 @@
             color: var(--text-muted);
             margin-top: 4px;
         }
-        body.alert-active .status-subtext { color: rgba(255,255,255,0.5); }
 
         .card {
             background: #ffffff;
             padding: 24px;
             border-radius: 24px;
             margin-bottom: 18px;
-            transition: all 0.4s ease;
             box-shadow: var(--card-shadow);
-        }
-
-        body.alert-active .card {
-            background: rgba(255, 255, 255, 0.06);
-            color: #ffffff;
-            box-shadow: none;
         }
 
         .login-box .welcome-graphic {
@@ -175,21 +156,40 @@
             cursor: pointer;
         }
 
-        body.alert-active button.btn-primary { background-color: #ffffff; color: var(--burgundy); }
+        .demo-actions-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
 
         .btn-force {
             width: 100%;
             padding: 8px;
             background-color: transparent;
             color: var(--danger-color);
-            border: 1.5px dashed var(--danger-color);
+            border: 1.5px solid var(--danger-color);
             border-radius: 12px;
             font-size: 0.85rem;
             font-weight: 700;
             cursor: pointer;
-            margin-top: 10px;
+            transition: background 0.2s;
         }
-        body.alert-active .btn-force { color: #ffffff; border-color: rgba(255,255,255,0.4); }
+        .btn-force:active { background: rgba(166, 38, 38, 0.05); }
+
+        .btn-resume {
+            width: 100%;
+            padding: 8px;
+            background-color: transparent;
+            color: var(--success-color);
+            border: 1.5px solid var(--success-color);
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-resume:auto { background: rgba(46, 125, 50, 0.05); }
 
         .section-title {
             font-size: 1.15rem;
@@ -199,7 +199,6 @@
             letter-spacing: -0.2px;
         }
 
-        /* הקטנה והחלשה של שורת הזמן כדי שלא תתחרה בכותרת */
         .live-timestamp {
             font-size: 0.75rem;
             font-weight: 600;
@@ -208,7 +207,6 @@
             text-align: center;
             margin-bottom: 18px;
         }
-        body.alert-active .live-timestamp { color: rgba(255,255,255,0.5); }
 
         .metrics-grid {
             display: grid;
@@ -221,12 +219,8 @@
             padding: 20px 12px;
             border-radius: 20px;
             text-align: center;
-            border: 1px solid rgba(0,0,0,0.01);
-        }
-
-        body.alert-active .metric-tile {
-            background: rgba(0, 0, 0, 0.15);
-            border: none;
+            border: 1px solid #efebe4;
+            box-shadow: var(--card-shadow);
         }
 
         .metric-label {
@@ -239,11 +233,10 @@
             justify-content: center;
             gap: 6px;
         }
-        body.alert-active .metric-label { color: rgba(255,255,255,0.6); }
 
         .metric-value-container {
             display: flex;
-            align-items: baseline; /* יישור מושלם לבייסליין */
+            align-items: baseline; 
             justify-content: center;
         }
 
@@ -254,7 +247,6 @@
             color: var(--text-dark);
             line-height: 1;
         }
-        body.alert-active .metric-value { color: #ffffff; }
 
         .metric-unit {
             font-size: 0.9rem;
@@ -262,7 +254,6 @@
             color: var(--text-muted);
             margin-left: 3px;
         }
-        body.alert-active .metric-unit { color: rgba(255,255,255,0.6); }
 
         .metric-status {
             display: inline-flex;
@@ -273,24 +264,18 @@
             margin-top: 10px;
             padding: 3px 10px;
             border-radius: 30px;
-            transition: all 0.3s ease;
         }
-        /* מחלקות עבור 3 מצבי המערכת הדינמיים */
+        
         .status-normal { background-color: rgba(46, 125, 50, 0.08); color: var(--success-color); }
         .status-elevated { background-color: rgba(245, 124, 0, 0.08); color: var(--warning-color); }
         .status-risk { background-color: rgba(198, 40, 40, 0.08); color: var(--danger-color); }
-        
-        body.alert-active .status-normal { background-color: rgba(255,255,255,0.1); color: #ffffff; }
-        body.alert-active .status-elevated { background-color: rgba(255,255,255,0.2); color: var(--yellow-accent); }
-        body.alert-active .status-risk { background-color: #ffffff; color: var(--burgundy); }
 
-        .emergency-toolbar { margin-top: 10px; margin-bottom: 10px; }
+        .emergency-toolbar { margin-top: 20px; margin-bottom: 10px; }
         .emergency-grid {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 12px;
         }
-        /* הוספת מסגרת עדינה וצל קל לכרטיסי החירום להתאמה מלאה */
         .btn-emergency {
             background: #ffffff;
             color: var(--text-dark);
@@ -308,69 +293,20 @@
             border: 1.5px solid #efebe4;
         }
         .btn-emergency .icon { font-size: 1.8rem; }
-        body.alert-active .btn-emergency { background: rgba(255,255,255,0.1); color: #ffffff; box-shadow: none; border-color: rgba(255,255,255,0.2); }
 
-        /* כיווץ וצמצום רווחים בפאנל הדמו */
         .demo-control-panel { 
             background: #ffffff; 
             padding: 16px 20px; 
             border-radius: 24px; 
             margin-top: 20px;
             box-shadow: var(--card-shadow);
-            border: 1px solid rgba(0,0,0,0.01);
+            border: 1px solid #efebe4;
         }
-        body.alert-active .demo-control-panel { background: rgba(255,255,255,0.06); border: none; }
         .slider-group { margin-bottom: 12px; }
         .slider-group:last-child { margin-bottom: 0; }
         .slider-group label { display: flex; justify-content: space-between; font-weight: 700; font-size: 0.85rem; color: var(--text-muted); }
-        body.alert-active .slider-group label { color: rgba(255,255,255,0.7); }
         .slider-group input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 10px; background: #ebdcb9; outline: none; margin: 6px 0; }
         .slider-group input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--burgundy); cursor: pointer; }
-        body.alert-active .slider-group input[type="range"]::-webkit-slider-thumb { background: #ffffff; }
-
-        /* פופ-אפ מודאל מורחב בשורה אחת */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(44, 37, 37, 0.85);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            visibility: hidden;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            backdrop-filter: blur(4px);
-        }
-        .modal-overlay.show { visibility: visible; opacity: 1; }
-        .modal-content {
-            background: var(--bg-banana); 
-            width: 92%;
-            max-width: 400px; /* הרחבה קלה כדי שהכותרת תשב בשורה אחת */
-            padding: 32px 24px;
-            border-radius: 28px;
-            text-align: center;
-            color: var(--text-dark);
-        }
-        .modal-content h2 { color: var(--danger-color); font-size: 1.45rem; margin: 0 0 12px 0; font-weight: 800; white-space: nowrap; } /* מניעת שבירת שורה מאולצת */
-        .modal-content p { font-size: 1rem; font-weight: 600; line-height: 1.5; margin: 0 0 24px 0; color: #4a3f3f; }
-        
-        .modal-actions { display: flex; flex-direction: column; gap: 12px; }
-        .btn-modal-call { background: var(--danger-color); color: white; font-size: 1rem; text-decoration: none; padding: 14px; border-radius: 14px; font-weight: 700; display: block; text-align: center; }
-        
-        /* כפתור Secondary קלאסי עם מסגרת דקה */
-        .btn-ok-secondary { 
-            background: transparent; 
-            color: var(--burgundy); 
-            font-size: 1rem; 
-            border: 1.5px solid var(--burgundy); 
-            font-weight: 700; 
-            padding: 12px; 
-            border-radius: 14px;
-            cursor: pointer; 
-            transition: background 0.2s;
-        }
-        .btn-ok-secondary:active { background: rgba(107, 29, 29, 0.05); }
     </style>
 </head>
 <body>
@@ -469,7 +405,11 @@
                 <input type="checkbox" id="patchToggle" checked onchange="togglePatchConnection()">
                 <label for="patchToggle" style="cursor:pointer; margin-left: 6px;">Simulate Patch Connected</label>
             </div>
-            <button class="btn-force" onclick="forceDehydrationAlert()">🚨 Trigger Demo Alert</button>
+            
+            <div class="demo-actions-grid">
+                <button class="btn-force" onclick="forceDehydrationAlert()">🚨 Trigger Alert</button>
+                <button class="btn-resume" onclick="resumeAutoSimulation()">🔄 Resume Auto</button>
+            </div>
             
             <div style="margin-top: 12px;">
                 <div class="slider-group">
@@ -493,23 +433,8 @@
     </div>
 </div>
 
-<div id="alertModal" class="modal-overlay">
-    <div class="modal-content">
-        <h2>⚠️ Dehydration Risk Detected</h2>
-        <p>Please drink water immediately.<br>If symptoms persist, seek medical assistance.</p>
-        <div class="modal-actions">
-            <a href="tel:0501234567" class="btn-modal-call">
-                📞 Call Emergency Contact
-            </a>
-            <button class="btn-ok-secondary" onclick="dismissAlert()">I'm Drinking Water</button>
-        </div>
-    </div>
-</div>
-
-<audio id="alertAudio" src="https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg" loop></audio>
-
 <script>
- // --- FIREBASE CONFIGURATION ---
+    // --- FIREBASE CONFIGURATION ---
     const firebaseConfig = {
         apiKey: "AIzaSyC9RUl-cTtvWGfOd43Yn7NYDLMq1cYCvXE",
         authDomain: "h2know-demo.firebaseapp.com",
@@ -520,28 +445,15 @@
         appId: "1:91107611504:web:3b4071b088f18db19cb5b5"
     };
 
-    // אתחול פיירבייס - פעם אחת בלבד!
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // הגדרת משתני האפליקציה (לוודא שאין פה שוב הגדרה של database!)
     let currentPatientId = "";
     let isPatchConnected = true;
     let updateInterval = null;
     let liveTimerInterval = null;
     let secondsSinceUpdate = 0;
-    let hasDismissedCurrentAlert = false;
-    let audioContextInitialized = false;
     let isManualMode = false;
-
-    function initAudio() {
-        if (!audioContextInitialized) {
-            document.getElementById('alertAudio').play().then(() => {
-                document.getElementById('alertAudio').pause();
-            }).catch(() => {});
-            audioContextInitialized = true;
-        }
-    }
 
     function loginPatient() {
         const username = document.getElementById('usernameInput').value.trim();
@@ -553,7 +465,6 @@
         }
 
         currentPatientId = patientId;
-        initAudio();
 
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('dashboardScreen').style.display = 'block';
@@ -600,25 +511,37 @@
         }
     }
 
-    // Threshold Evaluator
     function checkDehydration(hr, temp, cond, stab) {
         return (hr > 100 || temp < 36.0 || temp > 37.7 || cond < 70 || stab < 60);
     }
 
+    function runSingleSimulationRound() {
+        if (!isPatchConnected) return;
+
+        const heartRate = Math.floor(Math.random() * (90 - 72 + 1)) + 72; 
+        const temperature = parseFloat((Math.random() * (37.1 - 36.5) + 36.5).toFixed(1));
+        const conductivity = Math.floor(Math.random() * (88 - 76 + 1)) + 76;
+        const stability = Math.floor(Math.random() * (98 - 85 + 1)) + 85;
+
+        updateSliderUi(heartRate, temperature, conductivity, stability);
+        pushDataToFirebase(heartRate, temperature, conductivity, stability);
+    }
+
     function startSensorSimulation() {
         if (updateInterval) clearInterval(updateInterval);
+        
+        // הרצה ראשונית מיידית כדי שלא יחכו 3 שניות
+        runSingleSimulationRound();
 
         updateInterval = setInterval(() => {
             if (!isPatchConnected || isManualMode) return;
-
-            const heartRate = Math.floor(Math.random() * (90 - 72 + 1)) + 72; 
-            const temperature = parseFloat((Math.random() * (37.1 - 36.5) + 36.5).toFixed(1));
-            const conductivity = Math.floor(Math.random() * (88 - 76 + 1)) + 76;
-            const stability = Math.floor(Math.random() * (98 - 85 + 1)) + 85;
-
-            updateSliderUi(heartRate, temperature, conductivity, stability);
-            pushDataToFirebase(heartRate, temperature, conductivity, stability);
+            runSingleSimulationRound();
         }, 3000);
+    }
+
+    function resumeAutoSimulation() {
+        isManualMode = false;
+        runSingleSimulationRound(); // מריץ מיד ערכים רנדומליים תקינים ומעדכן פיירבייס
     }
 
     function updateSliderUi(hr, temp, cond, stab) {
@@ -649,7 +572,6 @@
 
     function forceDehydrationAlert() {
         if (!currentPatientId) return;
-        initAudio();
         isManualMode = true;
         
         const highHR = 108;
@@ -657,7 +579,6 @@
         const lowCond = 62;
         const lowStab = 55;
         
-        hasDismissedCurrentAlert = false; 
         updateSliderUi(highHR, highTemp, lowCond, lowStab);
         pushDataToFirebase(highHR, highTemp, lowCond, lowStab);
     }
@@ -684,16 +605,12 @@
         document.getElementById('val-cond').innerText = cond;
         document.getElementById('val-stab').innerText = stab;
 
-        // מנגנון תלת-שלבי דינמי ומתוחכם לניהול מצבי המערכת (Normal / Elevated / High Risk)
         evaluateMetricState('stat-hr', hr, 90, 100, "BPM", true);
         evaluateMetricState('stat-temp', temp, 37.3, 37.7, "°C", false, 36.5, 36.0);
-        evaluateMetricState('stat-cond', cond, 80, 70, "%", false); // ביו-מוליכות: נמוך זה מסוכן
-        evaluateMetricState('stat-stab', stab, 75, 60, "", false);  // יציבות: נמוך זה מסוכן
-
-        handleUiAlertState(isDehydrated);
+        evaluateMetricState('stat-cond', cond, 80, 70, "%", false); 
+        evaluateMetricState('stat-stab', stab, 75, 60, "", false);  
     }
 
-    // פונקציית עזר חכמה לחישוב מצב המדד (תקין / בינוני / קריטי)
     function evaluateMetricState(elementId, val, normalBoundary, riskBoundary, unit, isHighDangerous, lowNormalBoundary = null, lowRiskBoundary = null) {
         const el = document.getElementById(elementId);
         
@@ -706,8 +623,7 @@
                 el.innerText = "🟢 Normal"; el.className = "metric-status status-normal";
             }
         } else {
-            // לוגיקה למדדים שבהם ערך נמוך הוא מסוכן (כמו מוליכות רקמה או יציבות) או טווחים מורכבים (טמפרטורה)
-            if (lowNormalBoundary !== null) { // מקרה של טמפרטורה
+            if (lowNormalBoundary !== null) { 
                 if (val > riskBoundary || val < lowRiskBoundary) {
                     el.innerText = "🔴 High Risk"; el.className = "metric-status status-risk";
                 } else if (val > normalBoundary || val < lowNormalBoundary) {
@@ -715,7 +631,7 @@
                 } else {
                     el.innerText = "🟢 Normal"; el.className = "metric-status status-normal";
                 }
-            } else { // מוליכות ויציבות
+            } else { 
                 if (val < riskBoundary) {
                     el.innerText = "🔴 High Risk"; el.className = "metric-status status-risk";
                 } else if (val < normalBoundary) {
@@ -725,35 +641,6 @@
                 }
             }
         }
-    }
-
-    function handleUiAlertState(isDehydrated) {
-        const body = document.body;
-        const modal = document.getElementById('alertModal');
-        const audio = document.getElementById('alertAudio');
-
-        if (isDehydrated) {
-            body.classList.add('alert-active');
-            if (!hasDismissedCurrentAlert) {
-                modal.classList.add('show');
-                audio.play().catch(() => {});
-            } else {
-                modal.classList.remove('show');
-                audio.pause();
-            }
-        } else {
-            body.classList.remove('alert-active');
-            modal.classList.remove('show');
-            audio.pause();
-            audio.currentTime = 0;
-            hasDismissedCurrentAlert = false;
-        }
-    }
-
-    function dismissAlert() {
-        hasDismissedCurrentAlert = true;
-        document.getElementById('alertModal').classList.remove('show');
-        document.getElementById('alertAudio').pause();
     }
 </script>
 
