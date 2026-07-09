@@ -270,7 +270,7 @@
         .status-elevated { background-color: rgba(245, 124, 0, 0.08); color: var(--warning-color); }
         .status-risk { background-color: rgba(198, 40, 40, 0.08); color: var(--danger-color); }
 
-        .emergency-toolbar { margin-top: 20px; margin-bottom: 10px; }
+        .emergency-toolbar { margin-top: 20px; margin-bottom: 25px; }
         .emergency-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -279,12 +279,12 @@
         .btn-emergency-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            position: relative;
         }
         .btn-emergency {
             background: #ffffff;
             color: var(--text-dark);
-            padding: 18px 8px;
+            padding: 12px 8px;
             border-radius: 20px;
             font-size: 0.85rem;
             font-weight: 700;
@@ -292,12 +292,12 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             box-shadow: 0 4px 15px rgba(107, 29, 29, 0.02);
             text-decoration: none;
             border: 1.5px solid #efebe4;
             width: 100%;
-            height: 100%;
+            height: 85px; /* גובה קבוע ומאוזן לשני הכפתורים */
         }
         .btn-emergency .icon { font-size: 1.8rem; }
         
@@ -311,6 +311,9 @@
             text-decoration: underline;
             text-align: center;
             opacity: 0.8;
+            position: absolute;
+            bottom: -22px; /* ציוף מתחת לכפתור הראשי בלי לפגוע בגובה שלו */
+            width: 100%;
         }
         .btn-update-phone:hover { opacity: 1; }
 
@@ -394,311 +397,3 @@
                 <div class="metric-label">💧 Conductivity</div>
                 <div class="metric-value-container">
                     <span class="metric-value" id="val-cond">--</span><span class="metric-unit">%</span>
-                </div>
-                <div class="metric-status status-normal" id="stat-cond">🟢 Normal</div>
-            </div>
-            <div class="metric-tile" id="tile-stab">
-                <div class="metric-label">📈 Stability Score</div>
-                <div class="metric-value-container">
-                    <span class="metric-value" id="val-stab">--</span>
-                </div>
-                <div class="metric-status status-normal" id="stat-stab">🟢 Normal</div>
-            </div>
-        </div>
-
-        <div class="emergency-toolbar">
-            <div class="emergency-grid">
-                <div class="btn-emergency-wrapper">
-                    <a href="tel:101" class="btn-emergency">
-                        <span class="icon">🚑</span>
-                        <span>Ambulance</span>
-                    </a>
-                </div>
-                <div class="btn-emergency-wrapper">
-                    <a href="tel:0501234567" id="caregiverLink" class="btn-emergency">
-                        <span class="icon">❤️</span>
-                        <span>Caregiver</span>
-                    </a>
-                    <button class="btn-update-phone" onclick="updateEmergencyPhone()">⚙️ Update Number</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="demo-control-panel">
-            <h4 style="margin: 0 0 10px 0; text-align: center; color: var(--burgundy); font-weight: 800; font-size: 0.95rem;">🧪 Demo Controls</h4>
-            <div class="toggle-container">
-                <input type="checkbox" id="patchToggle" checked onchange="togglePatchConnection()">
-                <label for="patchToggle" style="cursor:pointer; margin-left: 6px;">Simulate Patch Connected</label>
-            </div>
-            
-            <div class="demo-actions-grid">
-                <button class="btn-force" onclick="forceDehydrationAlert()">🚨 Trigger Alert</button>
-                <button class="btn-resume" onclick="resumeAutoSimulation()">🔄 Resume Auto</button>
-            </div>
-            
-            <div style="margin-top: 12px;">
-                <div class="slider-group">
-                    <label><span>Heart Rate</span><span><span id="lbl-hr">80</span> BPM</span></label>
-                    <input type="range" id="sld-hr" min="50" max="140" value="80" oninput="manualOverride()">
-                </div>
-                <div class="slider-group">
-                    <label><span>Temperature</span><span><span id="lbl-temp">36.6</span> °C</span></label>
-                    <input type="range" id="sld-temp" min="34" max="40" step="0.1" value="36.6" oninput="manualOverride()">
-                </div>
-                <div class="slider-group">
-                    <label><span>Tissue Conductivity</span><span><span id="lbl-cond">85</span> %</span></label>
-                    <input type="range" id="sld-cond" min="50" max="100" value="85" oninput="manualOverride()">
-                </div>
-                <div class="slider-group">
-                    <label><span>Stability Score</span><span><span id="lbl-stab">90</span></span></label>
-                    <input type="range" id="sld-stab" min="40" max="100" value="90" oninput="manualOverride()">
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    // --- FIREBASE CONFIGURATION ---
-    const firebaseConfig = {
-        apiKey: "AIzaSyC9RUl-cTtvWGfOd43Yn7NYDLMq1cYCvXE",
-        authDomain: "h2know-demo.firebaseapp.com",
-        databaseURL: "https://h2know-demo-default-rtdb.firebaseio.com/",
-        projectId: "h2know-demo",
-        storageBucket: "h2know-demo.appspot.com",
-        messagingSenderId: "91107611504",
-        appId: "1:91107611504:web:3b4071b088f18db19cb5b5"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-
-    let currentPatientId = "";
-    let isPatchConnected = true;
-    let updateInterval = null;
-    let liveTimerInterval = null;
-    let secondsSinceUpdate = 0;
-    let isManualMode = false;
-    let currentEmergencyPhone = "";
-
-    function loginPatient() {
-        const username = document.getElementById('usernameInput').value.trim();
-        const patientId = document.getElementById('idInput').value.trim();
-        const emergencyPhone = document.getElementById('emergencyPhoneInput').value.trim();
-
-        if (!username || !patientId || !emergencyPhone) {
-            alert("Please fill in all details, including emergency contact phone.");
-            return;
-        }
-
-        currentPatientId = patientId;
-        currentEmergencyPhone = emergencyPhone;
-
-        const caregiverLink = document.getElementById('caregiverLink');
-        caregiverLink.href = "tel:" + currentEmergencyPhone;
-
-        document.getElementById('loginScreen').style.display = 'none';
-        document.getElementById('dashboardScreen').style.display = 'block';
-        
-        togglePatchConnection();
-        startSensorSimulation();
-        startLiveTimer();
-    }
-
-    function updateEmergencyPhone() {
-        const newPhone = prompt("Enter new emergency contact phone number:", currentEmergencyPhone);
-        
-        if (newPhone === null) return; // המשתמש לחץ ביטול
-        
-        const trimmedPhone = newPhone.trim();
-        if (!trimmedPhone) {
-            alert("Phone number cannot be empty.");
-            return;
-        }
-
-        currentEmergencyPhone = trimmedPhone;
-        
-        // עדכון לינק החיוג על המסך
-        const caregiverLink = document.getElementById('caregiverLink');
-        caregiverLink.href = "tel:" + currentEmergencyPhone;
-
-        // עדכון ב-Firebase תחת המטופל הנוכחי כדי לשמור על סנכרון
-        if (currentPatientId) {
-            database.ref('patients/' + currentPatientId + '/emergencyPhone').set(currentEmergencyPhone);
-        }
-
-        alert("Emergency contact number updated successfully!");
-    }
-
-    function startLiveTimer() {
-        if (liveTimerInterval) clearInterval(liveTimerInterval);
-        liveTimerInterval = setInterval(() => {
-            secondsSinceUpdate++;
-            const timerEl = document.getElementById('liveTimer');
-            if (secondsSinceUpdate <= 1) {
-                timerEl.innerText = "Last sync: just now";
-            } else {
-                timerEl.innerText = `Last sync: ${secondsSinceUpdate} sec ago`;
-            }
-        }, 1000);
-    }
-
-    function resetLiveTimer() {
-        secondsSinceUpdate = 0;
-        document.getElementById('liveTimer').innerText = "Last sync: just now";
-    }
-
-    function togglePatchConnection() {
-        isPatchConnected = document.getElementById('patchToggle').checked;
-        const statusBadge = document.getElementById('connectionStatus');
-        const durationSubtext = document.getElementById('connectionDuration');
-        
-        if (isPatchConnected) {
-            statusBadge.innerHTML = "🟢 Patch Connected"; 
-            statusBadge.className = "status-badge status-connected";
-            durationSubtext.style.display = "block";
-        } else {
-            statusBadge.innerText = "Patch Disconnected";
-            statusBadge.className = "status-badge status-disconnected";
-            durationSubtext.style.display = "none";
-            if (currentPatientId) {
-                database.ref('patients/' + currentPatientId + '/patchConnected').set(false);
-            }
-        }
-    }
-
-    function checkDehydration(hr, temp, cond, stab) {
-        return (hr > 100 || temp < 36.0 || temp > 37.7 || cond < 70 || stab < 60);
-    }
-
-    function runSingleSimulationRound() {
-        if (!isPatchConnected) return;
-
-        const heartRate = Math.floor(Math.random() * (90 - 72 + 1)) + 72; 
-        const temperature = parseFloat((Math.random() * (37.1 - 36.5) + 36.5).toFixed(1));
-        const conductivity = Math.floor(Math.random() * (88 - 76 + 1)) + 76;
-        const stability = Math.floor(Math.random() * (98 - 85 + 1)) + 85;
-
-        updateSliderUi(heartRate, temperature, conductivity, stability);
-        pushDataToFirebase(heartRate, temperature, conductivity, stability);
-    }
-
-    function startSensorSimulation() {
-        if (updateInterval) clearInterval(updateInterval);
-        
-        runSingleSimulationRound();
-
-        updateInterval = setInterval(() => {
-            if (!isPatchConnected || isManualMode) return;
-            runSingleSimulationRound();
-        }, 3000);
-    }
-
-    function resumeAutoSimulation() {
-        isManualMode = false;
-        runSingleSimulationRound();
-    }
-
-    function updateSliderUi(hr, temp, cond, stab) {
-        document.getElementById('sld-hr').value = hr;
-        document.getElementById('lbl-hr').innerText = hr;
-        document.getElementById('sld-temp').value = temp;
-        document.getElementById('lbl-temp').innerText = temp;
-        document.getElementById('sld-cond').value = cond;
-        document.getElementById('lbl-cond').innerText = cond;
-        document.getElementById('sld-stab').value = stab;
-        document.getElementById('lbl-stab').innerText = stab;
-    }
-
-    function manualOverride() {
-        isManualMode = true; 
-        const hr = parseInt(document.getElementById('sld-hr').value);
-        const temp = parseFloat(document.getElementById('sld-temp').value);
-        const cond = parseInt(document.getElementById('sld-cond').value);
-        const stab = parseInt(document.getElementById('sld-stab').value);
-
-        document.getElementById('lbl-hr').innerText = hr;
-        document.getElementById('lbl-temp').innerText = temp;
-        document.getElementById('lbl-cond').innerText = cond;
-        document.getElementById('lbl-stab').innerText = stab;
-
-        pushDataToFirebase(hr, temp, cond, stab);
-    }
-
-    function forceDehydrationAlert() {
-        if (!currentPatientId) return;
-        isManualMode = true;
-        
-        const highHR = 108;
-        const highTemp = 38.1;
-        const lowCond = 62;
-        const lowStab = 55;
-        
-        updateSliderUi(highHR, highTemp, lowCond, lowStab);
-        pushDataToFirebase(highHR, highTemp, lowCond, lowStab);
-    }
-
-    function pushDataToFirebase(hr, temp, cond, stab) {
-        const isDehydrated = checkDehydration(hr, temp, cond, stab);
-        resetLiveTimer(); 
-        
-        const payload = {
-            patientName: document.getElementById('usernameInput').value || "Israel Israeli",
-            heartRate: hr,
-            temperature: temp,
-            tissueConductivity: cond,
-            stabilityScore: stab,
-            patchConnected: isPatchConnected,
-            isAlertActive: isDehydrated,
-            emergencyPhone: currentEmergencyPhone,
-            timestamp: firebase.database.ServerValue.TIMESTAMP
-        };
-
-        database.ref('patients/' + currentPatientId).set(payload);
-
-        document.getElementById('val-hr').innerText = hr;
-        document.getElementById('val-temp').innerText = temp;
-        document.getElementById('val-cond').innerText = cond;
-        document.getElementById('val-stab').innerText = stab;
-
-        evaluateMetricState('stat-hr', hr, 90, 100, "BPM", true);
-        evaluateMetricState('stat-temp', temp, 37.3, 37.7, "°C", false, 36.5, 36.0);
-        evaluateMetricState('stat-cond', cond, 80, 70, "%", false); 
-        evaluateMetricState('stat-stab', stab, 75, 60, "", false);  
-    }
-
-    function evaluateMetricState(elementId, val, normalBoundary, riskBoundary, unit, isHighDangerous, lowNormalBoundary = null, lowRiskBoundary = null) {
-        const el = document.getElementById(elementId);
-        
-        if (isHighDangerous) {
-            if (val > riskBoundary) {
-                el.innerText = "🔴 High Risk"; el.className = "metric-status status-risk";
-            } else if (val > normalBoundary) {
-                el.innerText = "🟡 Elevated"; el.className = "metric-status status-elevated";
-            } else {
-                el.innerText = "🟢 Normal"; el.className = "metric-status status-normal";
-            }
-        } else {
-            if (lowNormalBoundary !== null) { 
-                if (val > riskBoundary || val < lowRiskBoundary) {
-                    el.innerText = "🔴 High Risk"; el.className = "metric-status status-risk";
-                } else if (val > normalBoundary || val < lowNormalBoundary) {
-                    el.innerText = "🟡 Elevated"; el.className = "metric-status status-elevated";
-                } else {
-                    el.innerText = "🟢 Normal"; el.className = "metric-status status-normal";
-                }
-            } else { 
-                if (val < riskBoundary) {
-                    el.innerText = "🔴 High Risk"; el.className = "metric-status status-risk";
-                } else if (val < normalBoundary) {
-                    el.innerText = "🟡 Elevated"; el.className = "metric-status status-elevated";
-                } else {
-                    el.innerText = "🟢 Normal"; el.className = "metric-status status-normal";
-                }
-            }
-        }
-    }
-</script>
-
-</body>
-</html>
