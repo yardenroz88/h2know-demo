@@ -105,7 +105,7 @@
             color: var(--text-muted);
         }
 
-        .login-box input[type="text"] {
+        .login-box input[type="text"], .login-box input[type="tel"] {
             width: 100%;
             padding: 16px 16px 16px 48px;
             border: 1.5px solid #efebe4;
@@ -118,7 +118,7 @@
             transition: border-color 0.3s;
         }
 
-        .login-box input[type="text"]:focus {
+        .login-box input[type="text"]:focus, .login-box input[type="tel"]:focus {
             border-color: var(--burgundy);
         }
 
@@ -273,8 +273,13 @@
         .emergency-toolbar { margin-top: 20px; margin-bottom: 10px; }
         .emergency-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .btn-emergency-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
         .btn-emergency {
             background: #ffffff;
@@ -291,8 +296,23 @@
             box-shadow: 0 4px 15px rgba(107, 29, 29, 0.02);
             text-decoration: none;
             border: 1.5px solid #efebe4;
+            width: 100%;
+            height: 100%;
         }
         .btn-emergency .icon { font-size: 1.8rem; }
+        
+        .btn-update-phone {
+            background: transparent;
+            border: none;
+            color: var(--burgundy);
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: underline;
+            text-align: center;
+            opacity: 0.8;
+        }
+        .btn-update-phone:hover { opacity: 1; }
 
         .demo-control-panel { 
             background: #ffffff; 
@@ -334,6 +354,10 @@
         <div class="input-wrapper">
             <span class="input-icon">🪪</span>
             <input type="text" id="idInput" placeholder="ID Number">
+        </div>
+        <div class="input-wrapper">
+            <span class="input-icon">📞</span>
+            <input type="tel" id="emergencyPhoneInput" placeholder="Emergency Contact Phone">
         </div>
         
         <div class="auth-checkbox-container">
@@ -384,18 +408,19 @@
 
         <div class="emergency-toolbar">
             <div class="emergency-grid">
-                <a href="tel:101" class="btn-emergency">
-                    <span class="icon">🚑</span>
-                    <span>Ambulance</span>
-                </a>
-                <a href="tel:0732222222" class="btn-emergency">
-                    <span class="icon">🏥</span>
-                    <span>Natali Care</span>
-                </a>
-                <a href="tel:0501234567" class="btn-emergency">
-                    <span class="icon">❤️</span>
-                    <span>Caregiver</span>
-                </a>
+                <div class="btn-emergency-wrapper">
+                    <a href="tel:101" class="btn-emergency">
+                        <span class="icon">🚑</span>
+                        <span>Ambulance</span>
+                    </a>
+                </div>
+                <div class="btn-emergency-wrapper">
+                    <a href="tel:0501234567" id="caregiverLink" class="btn-emergency">
+                        <span class="icon">❤️</span>
+                        <span>Caregiver</span>
+                    </a>
+                    <button class="btn-update-phone" onclick="updateEmergencyPhone()">⚙️ Update Number</button>
+                </div>
             </div>
         </div>
 
@@ -454,17 +479,23 @@
     let liveTimerInterval = null;
     let secondsSinceUpdate = 0;
     let isManualMode = false;
+    let currentEmergencyPhone = "";
 
     function loginPatient() {
         const username = document.getElementById('usernameInput').value.trim();
         const patientId = document.getElementById('idInput').value.trim();
+        const emergencyPhone = document.getElementById('emergencyPhoneInput').value.trim();
 
-        if (!username || !patientId) {
-            alert("Please fill in your details.");
+        if (!username || !patientId || !emergencyPhone) {
+            alert("Please fill in all details, including emergency contact phone.");
             return;
         }
 
         currentPatientId = patientId;
+        currentEmergencyPhone = emergencyPhone;
+
+        const caregiverLink = document.getElementById('caregiverLink');
+        caregiverLink.href = "tel:" + currentEmergencyPhone;
 
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('dashboardScreen').style.display = 'block';
@@ -472,6 +503,31 @@
         togglePatchConnection();
         startSensorSimulation();
         startLiveTimer();
+    }
+
+    function updateEmergencyPhone() {
+        const newPhone = prompt("Enter new emergency contact phone number:", currentEmergencyPhone);
+        
+        if (newPhone === null) return; // המשתמש לחץ ביטול
+        
+        const trimmedPhone = newPhone.trim();
+        if (!trimmedPhone) {
+            alert("Phone number cannot be empty.");
+            return;
+        }
+
+        currentEmergencyPhone = trimmedPhone;
+        
+        // עדכון לינק החיוג על המסך
+        const caregiverLink = document.getElementById('caregiverLink');
+        caregiverLink.href = "tel:" + currentEmergencyPhone;
+
+        // עדכון ב-Firebase תחת המטופל הנוכחי כדי לשמור על סנכרון
+        if (currentPatientId) {
+            database.ref('patients/' + currentPatientId + '/emergencyPhone').set(currentEmergencyPhone);
+        }
+
+        alert("Emergency contact number updated successfully!");
     }
 
     function startLiveTimer() {
@@ -530,7 +586,6 @@
     function startSensorSimulation() {
         if (updateInterval) clearInterval(updateInterval);
         
-        // הרצה ראשונית מיידית כדי שלא יחכו 3 שניות
         runSingleSimulationRound();
 
         updateInterval = setInterval(() => {
@@ -541,7 +596,7 @@
 
     function resumeAutoSimulation() {
         isManualMode = false;
-        runSingleSimulationRound(); // מריץ מיד ערכים רנדומליים תקינים ומעדכן פיירבייס
+        runSingleSimulationRound();
     }
 
     function updateSliderUi(hr, temp, cond, stab) {
@@ -595,6 +650,7 @@
             stabilityScore: stab,
             patchConnected: isPatchConnected,
             isAlertActive: isDehydrated,
+            emergencyPhone: currentEmergencyPhone,
             timestamp: firebase.database.ServerValue.TIMESTAMP
         };
 
